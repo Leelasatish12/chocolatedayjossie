@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>For My Jossie ❤️</title>
+   <style>
+       @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap');
+       :root {
+           --bg-color: #fff0f3;
+           --accent-color: #ff4d6d;
+           --chocolate-brown: #4e342e;
+           --soft-pink: #ffccd5;
+       }
+       body {
+           margin: 0;
+           padding: 0;
+           font-family: 'Quicksand', sans-serif;
+           background-color: var(--bg-color);
+           color: var(--chocolate-brown);
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: 100vh;
+           overflow: hidden;
+           background: linear-gradient(135deg, #fff0f3 0%, #ffccd5 100%);
+       }
+       /* Floating Hearts Background */
+       .heart {
+           position: absolute;
+           color: var(--accent-color);
+           opacity: 0.3;
+           pointer-events: none;
+           animation: float 5s linear infinite;
+       }
+       @keyframes float {
+           0% { transform: translateY(100vh) rotate(0deg); }
+           100% { transform: translateY(-10vh) rotate(360deg); }
+       }
+       .screen {
+           display: none;
+           flex-direction: column;
+           align-items: center;
+           width: 90%;
+           max-width: 450px;
+           background: rgba(255, 255, 255, 0.8);
+           padding: 30px;
+           border-radius: 30px;
+           box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2);
+           backdrop-filter: blur(5px);
+           border: 2px solid white;
+           text-align: center;
+       }
+       .active { display: flex; animation: fadeIn 0.8s ease-in-out; }
+       @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+       h1 { font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: var(--accent-color); margin-bottom: 10px; }
+       p { font-size: 1.1rem; line-height: 1.5; }
+       .character-box { font-size: 80px; margin: 20px 0; animation: pulse 2s infinite; }
+       @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+       button {
+           background: var(--accent-color);
+           color: white;
+           border: none;
+           padding: 12px 30px;
+           border-radius: 50px;
+           font-size: 1.1rem;
+           font-weight: 600;
+           cursor: pointer;
+           box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+           transition: 0.3s;
+           margin-top: 20px;
+       }
+       button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 77, 109, 0.6); }
+       /* Game Board */
+       #game-area {
+           width: 100%;
+           height: 350px;
+           background: #fff;
+           border-radius: 20px;
+           position: relative;
+           overflow: hidden;
+           border: 2px dashed var(--accent-color);
+           margin: 15px 0;
+       }
+       #basket { position: absolute; bottom: 5px; left: 50%; font-size: 45px; transform: translateX(-50%); touch-action: none; cursor: grab; }
+       .falling { position: absolute; font-size: 25px; }
+       .score-board { display: flex; justify-content: space-between; width: 100%; font-weight: bold; }
+   </style>
+</head>
+<body>
+   <div id="screen1" class="screen active">
+       <h1>Hi Jossie!</h1>
+       <div class="character-box">🐼🎀</div>
+       <p>I heard it's Chocolate Day, and honestly? No chocolate is as sweet as you. But let's see if you can catch some anyway!</p>
+       <button onclick="nextScreen('screen2')">Catch them for me? 🥺</button>
+   </div>
+   <div id="screen2" class="screen">
+       <div class="score-board">
+           <span>Chocolates: <span id="score">0</span></span>
+           <span>Lives: <span id="lives">3</span></span>
+       </div>
+       <div id="game-area">
+           <div id="basket">🧺</div>
+       </div>
+       <p>Catch 🍫 and 🍩. Avoid 🥦!</p>
+   </div>
+   <div id="screen3" class="screen">
+       <h1>Mission Accomplished!</h1>
+       <div class="character-box">🐻🍫🐼</div>
+       <p>You caught <span id="final-score">0</span> treats!</p>
+       <p>But wait... I have a special certificate for you.</p>
+       <button onclick="nextScreen('screen4')">Claim Reward 🎁</button>
+   </div>
+   <div id="screen4" class="screen">
+       <div style="border: 5px double var(--accent-color); padding: 20px; border-radius: 15px;">
+           <h1 style="font-size: 1.8rem;">Official Certificate</h1>
+           <p>This certifies that</p>
+           <h2 style="color: var(--accent-color); font-family: 'Dancing Script'; font-size: 2.2rem;">Josana (My Jossie)</h2>
+           <p>is officially 100% sweeter than <br>Swiss Chocolate & Belgian Truffles combined.</p>
+           <div class="character-box" style="font-size: 50px;">👑💝</div>
+       </div>
+       <h3>Happy Chocolate Day, Love!</h3>
+       <button onclick="location.reload()">I Love You! ❤️</button>
+   </div>
+   <script>
+       // Background Hearts
+       function createHeart() {
+           const heart = document.createElement('div');
+           heart.classList.add('heart');
+           heart.innerHTML = '❤️';
+           heart.style.left = Math.random() * 100 + 'vw';
+           heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+           document.body.appendChild(heart);
+           setTimeout(() => heart.remove(), 5000);
+       }
+       setInterval(createHeart, 400);
+       // Game Logic
+       let score = 0;
+       let lives = 3;
+       let gameActive = false;
+       const basket = document.getElementById('basket');
+       const gameArea = document.getElementById('game-area');
+       function nextScreen(id) {
+           document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+           document.getElementById(id).classList.add('active');
+           if(id === 'screen2') startGame();
+       }
+       // Mouse/Touch Controls
+       gameArea.addEventListener('mousemove', (e) => {
+           let rect = gameArea.getBoundingClientRect();
+           let x = e.clientX - rect.left;
+           moveBasket(x);
+       });
+       gameArea.addEventListener('touchmove', (e) => {
+           let rect = gameArea.getBoundingClientRect();
+           let x = e.touches[0].clientX - rect.left;
+           moveBasket(x);
+       });
+       function moveBasket(x) {
+           let limit = gameArea.offsetWidth - basket.offsetWidth;
+           let pos = x - (basket.offsetWidth / 2);
+           if (pos < 0) pos = 0;
+           if (pos > limit) pos = limit;
+           basket.style.left = pos + 'px';
+       }
+       function startGame() {
+           gameActive = true;
+           let spawnRate = 1000;
+           const loop = setInterval(() => {
+               if(!gameActive) { clearInterval(loop); return; }
+               createItem();
+           }, 800);
+       }
+       function createItem() {
+           const item = document.createElement('div');
+           const isBroccoli = Math.random() < 0.2;
+           item.className = 'falling';
+           item.innerHTML = isBroccoli ? '🥦' : ['🍫', '🍩', '🍬', '🧁'][Math.floor(Math.random()*4)];
+           item.style.left = Math.random() * (gameArea.offsetWidth - 30) + 'px';
+           item.style.top = '-30px';
+           gameArea.appendChild(item);
+           let fallPos = -30;
+           const fall = setInterval(() => {
+               fallPos += 4;
+               item.style.top = fallPos + 'px';
+               let bRect = basket.getBoundingClientRect();
+               let iRect = item.getBoundingClientRect();
+               if (iRect.bottom >= bRect.top && iRect.left < bRect.right && iRect.right > bRect.left) {
+                   if(isBroccoli) {
+                       lives--;
+                       document.getElementById('lives').innerText = lives;
+                       if(lives <= 0) endGame();
+                   } else {
+                       score++;
+                       document.getElementById('score').innerText = score;
+                       if(score >= 15) endGame();
+                   }
+                   item.remove();
+                   clearInterval(fall);
+               }
+               if (fallPos > 350) {
+                   item.remove();
+                   clearInterval(fall);
+               }
+           }, 20);
+       }
+       function endGame() {
+           gameActive = false;
+           document.getElementById('final-score').innerText = score;
+           setTimeout(() => nextScreen('screen3'), 500);
+       }
+   </script>
+</body>
+</html>
